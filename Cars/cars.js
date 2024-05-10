@@ -293,13 +293,11 @@ router.get(`${apiHandler.getAllCarModels}`, async (req, res) => {
     try {
     const snapshot= await db.collection("CarModels").get()
         if(!snapshot.empty){
-        console.log(snapshot.empty)
         const carModels=[];
         snapshot.forEach((carModel)=>{
             const data=carModel.data()
-           
             const newcarmodel=new CarModel(
-                data.id,
+                carModel.id,
                 data.modelName,
                 data.modelYear,
                 data.carBrand,
