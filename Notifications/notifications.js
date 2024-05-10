@@ -131,6 +131,39 @@ else{
 })
 
 
+
+router.get(`${apiHandler.getAllServices}`,async(req,res)=>{
+
+        try{
+    const snapshot =await db.collection("services").get()
+    
+        if(snapshot.empty){
+            return res.status(404).json({"message":"There is no services at all"});
+        }
+        
+            const servicesList=[]
+           snapshot.forEach((service)=>{
+            const data=service.data()
+                const newservice={
+                    id:service.id,
+                     name:data.name,
+                     description:data.description,
+                     logo:data.logo,
+                     createdAt:data.createdAt,
+                     updatedAt:data.updateAt,
+                }
+                servicesList.push(newservice)
+           })
+           return res.status(200).json(servicesList)
+           
+    }
+    catch{
+        return res.status(500).json({ "error": 'Error getting services from DataBase '});
+    }
+
+})
+
+
 async function callLastDataBaseUpdate() {
     try {
         const URL=`${process.env.DOMAIN}api/v1/LastDataBaseUpdate`

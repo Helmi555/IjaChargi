@@ -52,6 +52,10 @@ function createResponseModel(msg,idhold,Errorcode,Thereisanerror){
 router.post(`${apiHandler.signUp}`,async(req,res)=>{
 
     const {account,user}=req.body
+    if(!errorCheck([account,user])){
+      return res.status(400).json({message:"Missing values"})
+
+    }
     const { email, password } = account;
     const { fullName, image, birthDay, listOfCars,phoneNumber } = user;
   

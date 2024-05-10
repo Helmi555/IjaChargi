@@ -100,6 +100,7 @@ class Car {
 
 
 router.post(`${apiHandler.registerCar}`, async (req, res) => {
+
     const carData = req.body.car;
     const userId = req.body.userId;
     const chassisNumber = carData.chassisNumber;
@@ -280,7 +281,7 @@ class CarModel {
     }
 }
 
-router.post(`${apiHandler.getAllCarModels}`, async (req, res) => {
+router.get(`${apiHandler.getAllCarModels}`, async (req, res) => {
 
     try {
     const snapshot= await db.collection("CarModels").get()

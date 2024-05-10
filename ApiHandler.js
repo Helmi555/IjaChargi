@@ -8,7 +8,7 @@ class ApiHandler {
     static getCarById="/api/v1/car/getCarById/:carId";
     static getCarsForUserById="/api/v1/car/getCarsOfUserById/:userId";
     static deleteCarForUser="/api/v1/car/deleteCarForUser/:carId/:userId";
-    static getAllCarBrands="/api/v1/carBransd/getAllCarBrand";
+    static getAllCarBrands="/api/v1/carBrands/getAllCarBrand";
     static getAllCarModels="/api/v1/carModel/getAllCarModels";
     static getAllNotificationByReceiverId="/api/v1/notification/getAllNotificationByReceiverId/:receiverId";
     static getAllServices="/api/v1/service/getAllServices";

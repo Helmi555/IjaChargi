@@ -194,7 +194,7 @@ router.get(`${apiHandler.getAllProviders}`,async(req,res)=>{
                 data.name,
                 data.email,
                 data.phone,
-                data.brand,
+                data.stationBrand,
                 data.createdAt,
                 data.updatedAt
             );
@@ -474,7 +474,7 @@ router.post(`${apiHandler.createChargerPort}`,async (req,res)=>{
     const chargingSpeed=req.body.chargingSpeed
     const type=req.body.type
     if(errorCheck([name,type,chargerId,chargingSpeed])){
-        try {
+        try {         
             const snapshot1 = await db.collection("Chargers").doc(chargerId).get();
             if(!snapshot1.exists){
                 //Station with the given ID
@@ -530,7 +530,7 @@ router.post(`${apiHandler.createChargerPort}`,async (req,res)=>{
         } 
      
     }catch (error) {
-        res.status(500).json({"message":"Error getting chargers from the database"})
+        res.status(500).json({message:"Error getting chargers from the database"})
     }
 }
     else{

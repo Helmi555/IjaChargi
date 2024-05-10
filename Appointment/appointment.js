@@ -194,7 +194,7 @@ router.post(`${apiHandler.createAppointment}`,async (req,res)=>{
                                     callLastDataBaseUpdate();
                                     return res.status(200).json(createResponseModel("Appointment added successfully",String(lastIndexOfRDV+1),200000,false));
                                 } catch {
-                                    return res.status(404).json({ "message": "error adding appointment" });
+                                    return res.status(400).json({ "message": "error adding appointment" });
                                 }
                             }
                             else{
@@ -209,7 +209,7 @@ router.post(`${apiHandler.createAppointment}`,async (req,res)=>{
                         }
                         }
                         else{
-                            return res.status(404).json({ "message": "chargerPort has no chargerId" });
+                            return res.status(400).json({ "message": "chargerPort has no chargerId" });
 
                         }
 
