@@ -209,7 +209,7 @@ router.get(`${apiHandler.getAllProviders}`,async(req,res)=>{
 });
 
 router.get(`${apiHandler.getProviderById}`,async (req,res)=>{
-    const id= req.body.id
+    const id= req.params.providerId
 
     if(errorCheck([id])){
         //no null values
@@ -229,7 +229,7 @@ router.get(`${apiHandler.getProviderById}`,async (req,res)=>{
 
     }
     else{
-        return res.status(400).send('Missing required fields');
+        return res.status(400).json({message:'Missing required fields'});
 
     }
 
