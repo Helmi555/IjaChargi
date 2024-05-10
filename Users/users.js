@@ -48,7 +48,6 @@ function createResponseModel(msg,idhold,Errorcode,Thereisanerror){
     }
 }
 
-
 router.post(`${apiHandler.signUp}`,async(req,res)=>{
 
    
@@ -61,7 +60,7 @@ router.post(`${apiHandler.signUp}`,async(req,res)=>{
        if(existingUser){
 
         
-       return res.status(409).json({message:"This Email is Already Registered"})
+       return res.status(400).json({message:"This Email is Already Registered"})
         
        }else{
          //new user
@@ -127,7 +126,7 @@ router.post(`${apiHandler.signUp}`,async(req,res)=>{
                     
             }
             else{
-               return res.status(409).json({ message: "user already registred in the DB"});
+               return res.status(400).json({ message: "user already registred in the DB"});
 
             }
                 }catch{
@@ -137,7 +136,7 @@ router.post(`${apiHandler.signUp}`,async(req,res)=>{
         }
             else{
                 
-               return res.status(409).json({ message: "account already registred in the DB"});
+               return res.status(400).json({ message: "account already registred in the DB"});
 
             }
         }catch{
@@ -251,7 +250,7 @@ router.get(`${apiHandler.getProfileByAccountId}`, async (req, res) => {
                     createdAt:accountData.createdAt,
                     updatedAt:accountData.updatedAt
                }
-               return res.status(201).json(newUser)
+               return res.status(200).json(newUser)
 
         } catch (error) {
             console.log(error);
