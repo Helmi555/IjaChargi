@@ -208,7 +208,7 @@ router.get(`${apiHandler.getAllProviders}`,async(req,res)=>{
     }
 });
 
-router.get(`${apiHandler.getProviderById}`,async (req,res)=>{
+ter.get(`${apiHandler.getProviderById}`,async (req,res)=>{
     const id= req.params.providerId
 
     if(errorCheck([id])){
