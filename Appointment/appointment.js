@@ -108,7 +108,7 @@ router.post(`${apiHandler.createAppointment}`,async (req,res)=>{
             const usersnap=await db.collection("Users").doc(userId).get()
             if(!usersnap.exists)
                 {
-                    return res.status(404).json({ "message": "User not found!" });
+                    return res.status(400).json({ "message": "User not found!" });
                 }
             
                 //user exists + check if the car exists 
@@ -116,17 +116,17 @@ router.post(`${apiHandler.createAppointment}`,async (req,res)=>{
                     const carsnap=await db.collection("Cars").doc(carId).get()
                     if(!carsnap.exists){
                         //car doesnt exist
-                        return res.status(404).json({ "message": "Car not found!" });
+                        return res.status(400).json({ "message": "Car not found!" });
                 
                     }
                     //check if the user own the car
 
                 const userdata=usersnap.data()
                 let carList=userdata.listOfCars
-                const carExist=carList.some(car =>car.chassisNumber==carId)
+                const carExist=carList.includes(carId)
                 if (!carExist) {
                 //the user doesnt have this car
-                return res.status(403).json({"message":"This user doesnt own this car"});
+                return res.status(400).json({"message":"This user doesnt own this car"});
                 }
 
                 try{
@@ -134,7 +134,7 @@ router.post(`${apiHandler.createAppointment}`,async (req,res)=>{
                     if(!chargerPortsnap.exists){
                         //chargerPort doesnt exist
                         
-                        return res.status(404).json({ "message": "chargerPort not found!" });
+                        return res.status(400).json({ "message": "chargerPort not found!" });
                     }   
                     //car && user exits check portCharger exits
                     
@@ -146,26 +146,26 @@ router.post(`${apiHandler.createAppointment}`,async (req,res)=>{
                             // Make all the checks
 
                                 if ( await checkIfChargerStatusIsONBychargerId(chargerId, res)){
-                                    return res.status(200).json({ "message": "car charger is unavailable" });
+                                    return res.status(400).json({ "message": "car charger is unavailable" });
                                 }
                                 
                                 if(await checkIfThereIsAppointmentWithTheSameTimeAndSameDate(date,time,res)){
-                                    return res.status(404).json({ "message": "this date is already taken" });
+                                    return res.status(400).json({ "message": "this date is already taken" });
 
                                 }
                                
                                 if(await checkIfUserHaveMoreThen2AppointmentFiDateHaki(userId,date,res)){
-                                    return res.status(404).json({ "message": "the user has already 2 appointments in this date" });
+                                    return res.status(400).json({ "message": "the user has already 2 appointments in this date" });
 
                                 }
                                 if(await checkIfUserHaveMoreThen10ActiveAppointmentInTheNext7Days(userId,date,res)){
-                                    return res.status(404).json({ "message": "the user has already 10 appointments in this week" });
+                                    return res.status(400).json({ "message": "the user has already 10 appointments in this week" });
 
                                 }
 
                                 if(await checkIfCarHaveMoreThen10ActiveAppointmentInTheNext7Days(carId,date,res)){
     
-                                return res.status(404).json({ "message": "the car has already 10 appointments in this week" });
+                                return res.status(400).json({ "message": "the car has already 10 appointments in this week" });
 
                                 }
                                 //all good just create the APPPPPOOINNTMMENNNTTT plllllllllllzzzzzzzzz     \\\\\\\\\\\\\\\\\\\\\\
@@ -234,7 +234,6 @@ router.post(`${apiHandler.createAppointment}`,async (req,res)=>{
     else{
         //null values
          res.status(400).json({"message":"Missing required fields"});
-
     }
 
 })
@@ -250,7 +249,7 @@ router.post(`${apiHandler.deleteAppointmentById}`,async(req,res)=>{
     
         if(!appsnapshot.exists){
 
-        return res.status(404).json({ "message": "Appointment not found!" });
+        return res.status(400).json({ "message": "Appointment not found!" });
         }
             db.collection("Appointments").doc(appId).delete()
             .then(()=>{
@@ -286,7 +285,7 @@ router.get(`${apiHandler.getAllAppointmentForDateAndChargerPort}`,async(req,res)
         const appsnapshot= await db.collection("Appointments").get()
          
         if(appsnapshot.empty){
-        return res.status(404).json({ "message": "Appointments not found!" });
+        return res.status(400).json({ "message": "Appointments not found!" });
         }
         const appList=[]
         appsnapshot.forEach((doc)=> {
@@ -334,7 +333,7 @@ router.get(`${apiHandler.getAllAppointmentForUser}`,async(req,res)=>{
         const appsnapshot= await db.collection("Appointments").where("userId","==",userId).get()
          
         if(appsnapshot.empty){
-        return res.status(404).json({ "message": "The user has no appointments" });
+        return res.status(400).json({ "message": "The user has no appointments" });
         }
         const appList=[]
         appsnapshot.forEach((doc)=> {
@@ -382,7 +381,7 @@ router.get(`${apiHandler.getAllAppointmentForCar}`,async(req,res)=>{
         const appsnapshot= await db.collection("Appointments").where("carId","==",carId).get()
          
         if(appsnapshot.empty){
-        return res.status(404).json({ "message": "The cas has no appointments" });
+        return res.status(400).json({ "message": "The cas has no appointments" });
         }
         const appList=[]
         appsnapshot.forEach((doc)=> {
@@ -429,7 +428,7 @@ Functions declarations
 400 Bad Request: The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, size too large, invalid request message framing).
 401 Unauthorized: The request has not been applied because it lacks valid authentication credentials for the target resource.
 403 Forbidden: The server understood the request but refuses to authorize it.
-404 Not Found: The requested resource could not be found but may be available in the future.
+400 Not Found: The requested resource could not be found but may be available in the future.
 405 Method Not Allowed: The request method is known by the server but has been disabled and cannot be used.
 500 Internal Server Error: A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
 */
@@ -534,7 +533,7 @@ async function checkIfChargerStatusIsONBychargerId(chargerId,res)
   
     const chargerData=snapcharger.data()
 
-        return !chargerData.status
+        return chargerData.status
 
     }
     catch{
@@ -551,7 +550,7 @@ router.post("/api/v1/LastDataBaseUpdate",async(req,res)=>{
     await col.doc("DataBaseUpdate").get()
     .then(async(data)=>{
         if(!data.exists){
-            res.sendStatus(404);
+            res.sendStatus(400);
         }
         else{
             let now=parseInt((new Date().getTime())/1000)

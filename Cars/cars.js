@@ -204,33 +204,38 @@ router.get(`${apiHandler.getCarById}`,async(req,res)=>{
 router.get(`${apiHandler.getCarsForUserById}`, async (req, res) => {
     const userId = req.params.userId;
     
-
     if (!userId) {
-         res.status(400).json({ "message": "User ID is required" });
-
+        return res.status(400).json({ "message": "User ID is required" });
     }
-        try {
-            const user = await db.collection("Users").doc(userId).get();
-            if (!user.exists) {
-                // User does not exist
-                return res.status(404).json({ "message": "No user with this userId." });
-            } else {
-                // User exists
-                const carsList = user.data().listOfCars;
-                if (carsList.length === 0) {
-                    // User has no cars
-                    return res.status(200).json({ "message": "This user has no cars" });
-                } else {
-                    // User has cars
-                    return res.status(200).json(carsList);
+
+    try {
+        const user = await db.collection("Users").doc(userId).get();
+        if (!user.exists) {
+            return res.status(400).json({ "message": "No user with this userId." });
+        } else {
+            const carsList = user.data().listOfCars;
+            const promises = carsList.map(async (carId) => {
+                try {
+                    const carsnap = await db.collection('Cars').doc(carId).get();
+                    if (carsnap.exists) {
+                        const newCar = {
+                            id: carsnap.id,
+                            ...carsnap.data()
+                        };
+                        return newCar;
+                    }
+                } catch (err) {
+                    console.log(err);
+                    throw new Error("Error getting cars from Database");
                 }
-            }
-        } catch (error) {
-            // Error handling
-            console.error("Error getting user information:", error);
-            return res.status(500).json({ "message": "Error getting info from Database" });
+            });
+            const finalCarList = await Promise.all(promises);
+            return res.status(200).json(finalCarList.filter(car => car)); // Filter out any undefined values
         }
-    
+    } catch (error) {
+        console.error("Error getting user information:", error);
+        return res.status(500).json({ "message": "Error getting info from Database" });
+    }
 });
 
 //delete car for user deleteCarForUser(carId,accountId)
