@@ -41,10 +41,10 @@ function getCurrentTime(){
     
 function createResponseModel(msg,idhold,Errorcode,Thereisanerror){
     return { 
-      Message:msg,
-      IdHolder:idhold,
-      ErrorCode:Errorcode,
-      ThereIsAnError:Thereisanerror
+      message:msg,
+      idHolder:idhold,
+      errorCode:Errorcode,
+      thereIsAnError:Thereisanerror
     }
 }
 
@@ -76,7 +76,6 @@ router.post(`${apiHandler.signUp}`,async(req,res)=>{
             });
             const userUID=userRecord.uid
             const now =getCurrentTime()
-
 
             bcrypt.hash(password, 10, async (err,hash) => {
                 if (err) {

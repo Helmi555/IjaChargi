@@ -42,16 +42,16 @@ return dateString
 }
 
 
-function createResponseModel(msg,idhold,list,object,Errorcode,Thereisanerror){
+    
+function createResponseModel(msg,idhold,Errorcode,Thereisanerror){
     return { 
-      Message:msg,
-      IdHolder:idhold,
-      list:list,
-      Object:object,
-      ErrorCode:Errorcode,
-      ThereIsAnError:Thereisanerror
+      message:msg,
+      idHolder:idhold,
+      errorCode:Errorcode,
+      thereIsAnError:Thereisanerror
     }
 }
+
 
 async function getIndexOfLastElement(documentName) {
     try {
@@ -191,7 +191,7 @@ router.post("/api/v1/LastDataBaseUpdate",async(req,res)=>{
                 res.status(200).json({ "message": "the last database update has been updated "});
             })
             .catch((error)=>{console.log(error)
-                res.status(500).json(createResponseModel("Error updating the value","",[],{},500,true))
+                res.status(500).json(createResponseModel("Error updating the value","",500000,true))
             });
         }
 

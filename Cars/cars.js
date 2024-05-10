@@ -42,14 +42,16 @@ return dateString
 }
 
 
+    
 function createResponseModel(msg,idhold,Errorcode,Thereisanerror){
     return { 
-      Message:msg,
-      IdHolder:idhold,
-      ErrorCode:Errorcode,
-      ThereIsAnError:Thereisanerror
+      message:msg,
+      idHolder:idhold,
+      errorCode:Errorcode,
+      thereIsAnError:Thereisanerror
     }
 }
+
 
 async function getIndexOfLastElement(documentName) {
     try {
