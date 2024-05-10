@@ -169,6 +169,9 @@ router.post(`${apiHandler.signUp}`,async(req,res)=>{
     }
 })
 
+
+
+
 async function checkUserExistsByEmail(email) {
     try {
       // Attempt to get the user by email
@@ -182,28 +185,51 @@ async function checkUserExistsByEmail(email) {
   }
 
 
-router.post(`${apiHandler.login}`, async (req, res) => {
+router.post(`${apiHandler.userValidation}`, async (req, res) => {
     
-    const { idToken } = req.body;
-    console.log(idToken)
-    if(errorCheck([idToken])){
-        try {
-            // Verify the ID token
-            const decodedToken = await auth.verifyIdToken(idToken);
-            const uid = decodedToken.uid;
-    
-            // Additional logic, such as fetching user data from Firestore
-            const userRecord = await db.collection('users').doc(uid).get();
-            const userData = userRecord.data();
-            console.log(userData)
-    
-          return res.status(200).json({message:"User signed in successfully"});
-        } catch (error) {
-            console.log(error);
-          return res.status(500).json({message:"Error signing in"});
-        }
+    const uid = req.params.uid;
+    const expirationTime=req.params.expirationTime
+    if(errorCheck([uid,expirationTime])){
+       
+            let now=parseInt((new Date().getTime())/1000)
+           if(0<=parseInt((now -expirationTime)/60)&&parseInt((now -expirationTime)/60)<60){
+            //the token is under 60 mints
+            try {
+              const userRecord = await db.collection("Accounts").doc(uid).get();
+              if(userRecord.exists){
+                if(userRecord.data().emailVerified==true){
+                  return res.status(200).json(createResponseModel("User already verified",uid,200000,false));
+                }
+                
+                try{
+                await  db.collection("Accounts").doc(uid).update({
+                  emailVerified:true
+                })
+                callLastDataBaseUpdate()
+                return res.status(200).json(createResponseModel("User verified sucessfully",uid,200000,false));
 
-}
+              }
+              catch(e){
+                console.log(e)
+                return res.status(500).json({message:"Error updating the emailVerfied field"});
+              }
+              }
+              else{
+                return res.status(400).json({message:"there is no account with this UID"});
+              }
+
+            } catch (error) 
+            {
+                console.log(error);
+              return res.status(500).json({message:"Error validating the user"});
+            }
+              
+           }
+           else{
+            return res.status(400).json({ message: "Token has expired" });
+
+           }
+      }
 else{
   return res.status(400).json({message:'Missing values'});
 }
