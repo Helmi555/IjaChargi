@@ -51,18 +51,11 @@ function createResponseModel(msg,idhold,Errorcode,Thereisanerror){
 
 router.post(`${apiHandler.signUp}`,async(req,res)=>{
 
-    const {account,user}=req.body
-    if(!errorCheck([account,user])){
-      return res.status(400).json({message:"Missing values"})
-
-    }
-    const { email, password } = account;
-    const { fullName, image, birthDay, listOfCars,phoneNumber } = user;
+   
+    const { email, password,fullName, image, birthDay, listOfCars,phoneNumber } = req.body;
   
-
     if(errorCheck([email,password,fullName, image, birthDay, listOfCars,phoneNumber])){
       //check if the user  already exists in the FB AUTH
-      
       try {
         const existingUser=await checkUserExistsByEmail(email)
        if(existingUser){
@@ -157,13 +150,11 @@ router.post(`${apiHandler.signUp}`,async(req,res)=>{
 })
 
         } catch (error) {
-            console.error('Error during signup:', error);
            return res.status(500).json({ message: "Error in signing up Auth", error: error.message });
         }
       }
     }
-      catch(e){
-        console.log(e)
+      catch{
        return res.status(400).json({ message: "error checking user Email"});
 
       }
@@ -180,7 +171,6 @@ async function checkUserExistsByEmail(email) {
     try {
       // Attempt to get the user by email
       const userRecord = await auth.getUserByEmail(email);
-      console.log('User exists:', userRecord.toJSON());
       return true; // User exists
     } catch (error) {
       console.error('Error checking if user exists:', error.message);
