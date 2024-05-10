@@ -40,12 +40,10 @@ return dateString
 }
 
 
-function createResponseModel(msg,idhold,list,object,Errorcode,Thereisanerror){
+function createResponseModel(msg,idhold,Errorcode,Thereisanerror){
     return { 
       Message:msg,
       IdHolder:idhold,
-      list:list,
-      Object:object,
       ErrorCode:Errorcode,
       ThereIsAnError:Thereisanerror
     }
@@ -194,7 +192,7 @@ router.post(`${apiHandler.createAppointment}`,async (req,res)=>{
                                     await db.collection("Appointments").doc(String(lastIndexOfRDV+1)).set(newRDV);
 
                                     callLastDataBaseUpdate();
-                                    return res.status(200).json({ "message": "Appointment added successfully" });
+                                    return res.status(200).json(createResponseModel("Appointment added successfully",String(lastIndexOfRDV+1),200000,false));
                                 } catch {
                                     return res.status(404).json({ "message": "error adding appointment" });
                                 }
@@ -256,7 +254,7 @@ router.post(`${apiHandler.deleteAppointmentById}`,async(req,res)=>{
             db.collection("Appointments").doc(appId).delete()
             .then(()=>{
                 callLastDataBaseUpdate()
-                return res.status(200).json({"message":"Appointment deleted Successfully"})
+                return res.status(200).json(createResponseModel("Appointment deleted successfully",appId,200000,false));
             })
     
             .catch((e)=>{
@@ -563,7 +561,7 @@ router.post("/api/v1/LastDataBaseUpdate",async(req,res)=>{
                 res.status(200).json({ "message": "the last database update has been updated "});
             })
             .catch((error)=>{console.log(error)
-                res.status(500).json(createResponseModel("Error updating the value","",[],{},500,true))
+                res.status(500).json({message:"Error updating the value"})
             });
         }
 
@@ -580,7 +578,6 @@ function formatDate(date) {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
 
-    
     return (`${year}-${month}-${day}`).toString();
 }
 

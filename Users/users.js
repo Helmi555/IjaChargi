@@ -7,7 +7,6 @@ const {db,auth}=require('../firebase.js');
 const { collection } = require("firebase/firestore");
 require("dotenv").config()
 const axios=require("axios");
-const { createUserWithEmailAndPassword } = require('firebase-admin/auth');
 
 
 
@@ -15,7 +14,6 @@ router.use(bp.urlencoded({extended:true}));
 router.use(express.json())
 
 const apiHandler=require("../ApiHandler.js");
-const { sendEmailVerification } = require("firebase/auth");
 
 function errorCheck(arr) {
     if (!Array.isArray(arr) || arr.length === 0) return false;
@@ -40,37 +38,15 @@ function getCurrentTime(){
     return dateString
     }
 
-/*
-public class Account {
-    Integer id;
-    String email;
-    String password;
-    String createdAt;
-    String updatedAt;
-    Boolean emailVerified;
-    Boolean disabled
+    
+function createResponseModel(msg,idhold,Errorcode,Thereisanerror){
+    return { 
+      Message:msg,
+      IdHolder:idhold,
+      ErrorCode:Errorcode,
+      ThereIsAnError:Thereisanerror
+    }
 }
-
-public class User
-{
-    Integer id;
-    String fullName;
-    String image;
-    String birthDay;
-    Integer numberOfCancelledAppointmentByMonth;
-    String listOfCars;
-    String phoneNumber;
-    String token;
-    String tokenExpiration;
-    String createdAt;
-    String updatedAt;
-}
-
---login(String mail,String pass)
---signUp(Account,User)
---getProfileByAccountId(Integer AccountId)
-
-*/
 
 
 router.post(`${apiHandler.signUp}`,async(req,res)=>{
@@ -88,7 +64,7 @@ router.post(`${apiHandler.signUp}`,async(req,res)=>{
        if(existingUser){
 
         
-       return  res.status(409).json({message:"This Email is Already Registered"})
+       return res.status(409).json({message:"This Email is Already Registered"})
         
        }else{
          //new user
@@ -141,15 +117,13 @@ router.post(`${apiHandler.signUp}`,async(req,res)=>{
                            }
                            await db.collection("Users").doc(userUID).set(newUser)
                            callLastDataBaseUpdate();
-                           return res.status(201).json({message:"Successfully Signed Up!"})
+                           return res.status(200).json(createResponseModel("User signed Up sucessfully",userUID,200000,false));
 
                         }
                         catch{
                            return res.status(500).json({ message: "error adding the user to the DB"});
 
                         }
-
-
                     }
                     catch{
                        return res.status(500).json({ message: "error adding the account to the DB"});
@@ -223,19 +197,19 @@ router.post(`${apiHandler.login}`, async (req, res) => {
             const userData = userRecord.data();
             console.log(userData)
     
-            res.status(200).json({message:"User signed in successfully"});
+          return res.status(200).json({message:"User signed in successfully"});
         } catch (error) {
             console.log(error);
-            res.status(500).json({message:"Error signing in"});
+          return res.status(500).json({message:"Error signing in"});
         }
 
 }
 else{
-    res.status(400).json({message:'Missing values'});
+  return res.status(400).json({message:'Missing values'});
 }
   });
 
-  router.post(`${apiHandler.getProfileByAccountId}`, async (req, res) => {
+router.get(`${apiHandler.getProfileByAccountId}`, async (req, res) => {
     
     const accountId=req.params.accountId
 
@@ -243,7 +217,7 @@ else{
         try {
            const accountsnap=await db.collection("Users").doc(accountId).get()
             if(!accountsnap.exists){
-                res.status(400).json({message:'This account does not exist'});
+              return res.status(400).json({message:'This account does not exist'});
 
             }
             const accountData=accountsnap.data()
@@ -255,21 +229,58 @@ else{
                     numberOfCancelledAppointmentByMonth:accountData.numberOfCancelledAppointmentByMonth,
                     listOfCars:accountData.listOfCars,
                     phoneNumber:accountData.phoneNumber,
-                    createdAt:accountData.now,
-                    updatedAt:accountData.now
+                    createdAt:accountData.createdAt,
+                    updatedAt:accountData.updatedAt
                }
                return res.status(201).json(newUser)
 
         } catch (error) {
             console.log(error);
-            res.status(500).send('Error signing in');
+          return res.status(500).json({message:"Error getting the userAccount from the database"});
         }
 
 }
 else{
-    res.status(400).json({message:'Missing values'});
+  return res.status(400).json({message:'Missing values'});
+}
+})
+
+
+router.get(`${apiHandler.getAccountByAccountId}`, async (req, res) => {
+    
+    const accountId=req.params.accountId
+
+    if(errorCheck([accountId])){
+        try {
+           const accountsnap=await db.collection("Accounts").doc(accountId).get()
+            if(!accountsnap.exists){
+              return res.status(400).json({message:'This account does not exist'});
+
+            }
+            const accountData=accountsnap.data()
+                const newUser={
+                    id:accountId,
+                    password:accountData.password,
+                    email:accountData.email,
+                    emailVerified:accountData.emailVerified,
+                    disabled:accountData.disabled,
+                    createdAt:accountData.createdAt,
+                    updatedAt:accountData.updatedAt
+
+               }
+               return res.status(200).json(newUser)
+
+        } catch (error) {
+            console.log(error);
+          return res.status(500).json({message:"Error getting the account from the database"});
+        }
+
+}
+else{
+  return res.status(400).json({message:'Missing values'});
 }
   });
+
 
 
 router.post("/api/v1/LastDataBaseUpdate",async(req,res)=>{
@@ -277,7 +288,7 @@ router.post("/api/v1/LastDataBaseUpdate",async(req,res)=>{
     await col.doc("DataBaseUpdate").get()
     .then(async(data)=>{
         if(!data.exists){
-            res.sendStatus(404);
+          return res.sendStatus(404);
         }
         else{
             let now=parseInt((new Date().getTime())/1000)
@@ -285,18 +296,30 @@ router.post("/api/v1/LastDataBaseUpdate",async(req,res)=>{
             lastDataBaseUpdate:now
             }) 
             .then(()=>{
-                res.status(200).json({ "message": "the last database update has been updated "});
+              return res.status(200).json({ "message": "the last database update has been updated "});
             })
             .catch((error)=>{console.log(error)
-                res.status(500).json(createResponseModel("Error updating the value","",[],{},500,true))
+              return res.status(500).json(createResponseModel("Error updating the value","",[],{},500,true))
             });
         }
 
     })
     .catch((error)=>{
-        res.status(500).json({ "error": 'Error getting the LastDataBaseUpdate',error });
+      return res.status(500).json({ "error": 'Error getting the LastDataBaseUpdate',error });
     })
 
+})
+
+router.get(`${apiHandler.getLastDataBaseUpdate}`,async(req,res)=>{
+    try{
+    const snap=await db.collection("DataBaseUpdate").doc("DataBaseUpdate").get()
+    return res.status(200).json(snap.data().lastDataBaseUpdate);
+
+    }
+    catch(e){
+        console.log(e);
+        return res.status(500).json({message:"Error getting the LastDataBaseUpdate from the database"});
+    }
 })
 
 
@@ -335,27 +358,5 @@ async function sendVerificationEmail(uid) {
       return false
     }
   }
-  
 
-/*  try {
-            // Create a new user in Firebase Auth using the Admin SDK
-            const userRecord = await auth.createUser({
-                email,
-                password,
-            });
-
-            // Additional logic for handling database updates or other post-signup actions
-            callLastDataBaseUpdate(); // Ensure this function is defined elsewhere in your code
-
-            // Respond with success message
-            res.status(201).send('User created successfully');
-        } catch (error) {
-            console.error('Error during signup:', error);
-            res.status(500).send({ message: "Error in signing up", error: error.message });
-        }
-
-
-
-
-*/
 module.exports=router

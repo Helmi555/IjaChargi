@@ -42,12 +42,10 @@ return dateString
 }
 
 
-function createResponseModel(msg,idhold,list,object,Errorcode,Thereisanerror){
+function createResponseModel(msg,idhold,Errorcode,Thereisanerror){
     return { 
       Message:msg,
       IdHolder:idhold,
-      list:list,
-      Object:object,
       ErrorCode:Errorcode,
       ThereIsAnError:Thereisanerror
     }
@@ -141,8 +139,8 @@ router.post(`${apiHandler.registerCar}`, async (req, res) => {
             callLastDataBaseUpdate()
             listOfCars.push(newCar);
             await db.collection("Users").doc(userId).update({ listOfCars: listOfCars });
-            callLastDataBaseUpdate
-            res.status(200).json({ "message": "Car added successfully to the listOfCars of this user" });
+            callLastDataBaseUpdate()
+            return res.status(200).json(createResponseModel("Car added successfully to the listOfCars of the user",userId,200000,false));
         } catch (error) {
             console.error('Error registering car:', error);
             res.status(500).json({ "message": "Error registering car" });
@@ -258,7 +256,8 @@ router.post(`${apiHandler.deleteCarForUser}`, async (req, res) => {
 
             await userRef.update({ listOfCars: carsList });
             callLastDataBaseUpdate();
-            return res.status(200).json({ "message": "Car deleted from this user's listOfCars" });
+            return res.status(200).json(createResponseModel("Car deleted from this user's listOfCars","",200000,false));
+
         } else {
             return res.status(404).json({ "message": "This user doesn't have this car" });
         }
