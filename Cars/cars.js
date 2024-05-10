@@ -143,7 +143,7 @@ router.post(`${apiHandler.registerCar}`, async (req, res) => {
             listOfCars.push(newCar);
             await db.collection("Users").doc(userId).update({ listOfCars: listOfCars });
             callLastDataBaseUpdate()
-            return res.status(200).json(createResponseModel("Car added successfully to the listOfCars of the user",userId,200000,false));
+            return res.status(200).json(createResponseModel("Car added successfully to the listOfCars of the user",userId,"200000",false));
         } catch (error) {
             console.error('Error registering car:', error);
             res.status(500).json({ "message": "Error registering car" });
@@ -264,7 +264,7 @@ router.post(`${apiHandler.deleteCarForUser}`, async (req, res) => {
 
             await userRef.update({ listOfCars: carsList });
             callLastDataBaseUpdate();
-            return res.status(200).json(createResponseModel("Car deleted from this user's listOfCars","",200000,false));
+            return res.status(200).json(createResponseModel("Car deleted from this user's listOfCars","","200000",false));
 
         } else {
             return res.status(404).json({ "message": "This user doesn't have this car" });

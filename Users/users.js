@@ -113,7 +113,7 @@ router.post(`${apiHandler.signUp}`,async(req,res)=>{
                            }
                            await db.collection("Users").doc(userUID).set(newUser)
                            callLastDataBaseUpdate();
-                           return res.status(200).json(createResponseModel("User signed Up sucessfully",userUID,200000,false));
+                           return res.status(200).json(createResponseModel("User signed Up sucessfully",userUID,"200000",false));
 
                         }
                         catch{
@@ -191,7 +191,7 @@ router.post(`${apiHandler.userValidation}`, async (req, res) => {
               const userRecord = await db.collection("Accounts").doc(uid).get();
               if(userRecord.exists){
                 if(userRecord.data().emailVerified==true){
-                  return res.status(200).json(createResponseModel("User already verified",uid,200000,false));
+                  return res.status(200).json(createResponseModel("User already verified",uid,"200000",false));
                 }
                 
                 try{
@@ -199,7 +199,7 @@ router.post(`${apiHandler.userValidation}`, async (req, res) => {
                   emailVerified:true
                 })
                 callLastDataBaseUpdate()
-                return res.status(200).json(createResponseModel("User verified sucessfully",uid,200000,false));
+                return res.status(200).json(createResponseModel("User verified sucessfully",uid,"200000",false));
 
               }
               catch(e){

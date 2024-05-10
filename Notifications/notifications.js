@@ -191,7 +191,7 @@ router.post("/api/v1/LastDataBaseUpdate",async(req,res)=>{
                 res.status(200).json({ "message": "the last database update has been updated "});
             })
             .catch((error)=>{console.log(error)
-                res.status(500).json(createResponseModel("Error updating the value","",500000,true))
+                res.status(500).json(createResponseModel("Error updating the value","","500000",true))
             });
         }
 

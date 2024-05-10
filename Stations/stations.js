@@ -362,7 +362,7 @@ router.post(`${apiHandler.createCharger}`,async (req,res)=>{
                     await db.collection("Chargers").doc(String(lastindex+1)).set(newCharger)
                     .then(()=>{
                         callLastDataBaseUpdate()
-                       return res.status(200).json(createResponseModel("Charger added sucessfully",String(lastindex+1),200000,false));
+                       return res.status(200).json(createResponseModel("Charger added sucessfully",String(lastindex+1),"200000",false));
                     })
                     .catch(()=>{
                        return res.status(500).json({"message":"Error adding charger to the DB"})
@@ -423,7 +423,7 @@ router.post(`${apiHandler.deleteCharger}`,async(req,res)=>{
            await db.collection("Chargers").doc(chargerId).delete()
            .then(()=>{
             callLastDataBaseUpdate()
-            return res.status(200).json(createResponseModel("Charger deleted sucessfully","",200000,false));
+            return res.status(200).json(createResponseModel("Charger deleted sucessfully","","200000",false));
            })
            .catch(()=>{
             return  res.status(500).json({message:"Error deleting charger from the database"})
@@ -508,7 +508,7 @@ router.post(`${apiHandler.createChargerPort}`,async (req,res)=>{
                     await db.collection("chargerPort").doc(String(lastindex+1)).set(newChargerPort)
                     .then(()=>{
                         callLastDataBaseUpdate()
-                        return res.status(200).json(createResponseModel("ChargerPort added sucessfully",String(lastindex+1),200000,false));
+                        return res.status(200).json(createResponseModel("ChargerPort added sucessfully",String(lastindex+1),"200000",false));
 
                     })
                     .catch(()=>{
@@ -554,7 +554,7 @@ router.post(`${apiHandler.deleteChargerPort}`,async(req,res)=>{
            await db.collection("chargerPort").doc(chargerPortId).delete()
            
             callLastDataBaseUpdate()
-            return res.status(200).json(createResponseModel("ChargerPort deleted sucessfully","",200000,false));
+            return res.status(200).json(createResponseModel("ChargerPort deleted sucessfully","","200000",false));
 
 
 

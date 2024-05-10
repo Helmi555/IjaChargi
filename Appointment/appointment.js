@@ -193,7 +193,7 @@ router.post(`${apiHandler.createAppointment}`,async (req,res)=>{
                                     await db.collection("Appointments").doc(String(lastIndexOfRDV+1)).set(newRDV);
 
                                     callLastDataBaseUpdate();
-                                    return res.status(200).json(createResponseModel("Appointment added successfully",String(lastIndexOfRDV+1),200000,false));
+                                    return res.status(200).json(createResponseModel("Appointment added successfully",String(lastIndexOfRDV+1),"200000",false));
                                 } catch {
                                     return res.status(400).json({ "message": "error adding appointment" });
                                 }
@@ -254,7 +254,7 @@ router.post(`${apiHandler.deleteAppointmentById}`,async(req,res)=>{
             db.collection("Appointments").doc(appId).delete()
             .then(()=>{
                 callLastDataBaseUpdate()
-                return res.status(200).json(createResponseModel("Appointment deleted successfully",appId,200000,false));
+                return res.status(200).json(createResponseModel("Appointment deleted successfully",appId,"200000",false));
             })
     
             .catch((e)=>{
