@@ -111,12 +111,9 @@ router.get(`${apiHandler.getAllNotificationByReceiverId}`,async(req,res)=>{
                 notifList.push(notification)
             }
            })
-           if(notifList.length!==0){
-           res.status(200).json(notifList)
-           }
-           else{
-            return res.status(200).json({"message":"This receiverId has no Notifications"})
-           }
+           
+           return res.status(200).json(notifList)
+           
         }
 
     }
