@@ -219,18 +219,10 @@ router.get(`${apiHandler.getCarsForUserById}`, async (req, res) => {
                 try {
                     const carsnap = await db.collection('Cars').doc(carId).get();
                     if (carsnap.exists) {
-                        const carData = carsnap.data();
-                const newCar = new Car(
-                    carId,
-                    carData.panelNumber,
-                    carData.carRegistrationDoc,
-                    carData.carModelId,
-                    carData.color,
-                    carData.batteryCapacity,
-                    carData.createdAt,
-                    carData.updatedAt
-                );
-                       
+                        const newCar = {
+                            id: carsnap.id,
+                            ...carsnap.data()
+                        };
                         return newCar;
                     }
                 } catch (err) {
