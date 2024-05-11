@@ -221,7 +221,7 @@ router.get(`${apiHandler.getCarsForUserById}`, async (req, res) => {
                     if (carsnap.exists) {
                         const carData = carsnap.data();
                 const newCar = new Car(
-                    carsnap.id,
+                    carId,
                     carData.panelNumber,
                     carData.carRegistrationDoc,
                     carData.carModelId,
