@@ -278,11 +278,11 @@ router.post(`${apiHandler.deleteCarForUser}`, async (req, res) => {
 
 ////////////car Model
 class CarModel {
-    constructor(id, modelName, modelYear, carBrand,image, createdAt, updatedAt) {
+    constructor(id, modelName, modelYear, carBrandId,image, createdAt, updatedAt) {
         this.id = id;
         this.modelName = modelName;
         this.modelYear = modelYear;
-        this.carBrandId = carBrand;
+        this.carBrandId = carBrandId;
         this.image=image,
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -301,7 +301,7 @@ router.get(`${apiHandler.getAllCarModels}`, async (req, res) => {
                 carModel.id,
                 data.modelName,
                 data.modelYear,
-                data.carBrand,
+                data.carBrandId,
                 data.image,
                 data.createdAt,
                 data.updatedAt
