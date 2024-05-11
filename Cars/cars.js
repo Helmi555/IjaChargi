@@ -27,6 +27,7 @@ function errorCheck(arr) {
     return true;
 }
 
+
 function getCurrentTime(){
     
 const currentDate = new Date();
