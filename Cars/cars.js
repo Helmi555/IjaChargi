@@ -129,7 +129,7 @@ router.post(`${apiHandler.registerCar}`, async (req, res) => {
 
             const now = getCurrentTime();
             const newCar = {
-                chassisNumber: chassisNumber,
+               // chassisNumber: chassisNumber,
                 panelNumber: panelNumber,
                 carRegistrationDoc: carRegistrationDoc,
                 carModelId: carModel,
