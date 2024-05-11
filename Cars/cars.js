@@ -131,7 +131,7 @@ router.post(`${apiHandler.registerCar}`, async (req, res) => {
                 chassisNumber: chassisNumber,
                 panelNumber: panelNumber,
                 carRegistrationDoc: carRegistrationDoc,
-                carModel: carModel,
+                carModelId: carModel,
                 color: color,
                 batteryCapacity: batteryCapacity,
                 createdAt: now,
