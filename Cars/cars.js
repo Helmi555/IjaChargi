@@ -81,7 +81,7 @@ class Car {
             // Constructor without chassisNumber
             this.panelNumber = chassisNumber;
             this.carRegistrationDoc = panelNumber;
-            this.carModel = carRegistrationDoc;
+            this.carModelId = carRegistrationDoc;
             this.color = carModel;
             this.batteryCapacity = color;
             this.createdAt = batteryCapacity;
@@ -91,7 +91,7 @@ class Car {
             this.chassisNumber=chassisNumber
             this.panelNumber = panelNumber;
             this.carRegistrationDoc = carRegistrationDoc;
-            this.carModel = carModel;
+            this.carModelId = carModel;
             this.color = color;
             this.batteryCapacity = batteryCapacity;
             this.createdAt = createdAt;
@@ -109,11 +109,11 @@ router.post(`${apiHandler.registerCar}`, async (req, res) => {
     const chassisNumber = carData.chassisNumber;
     const panelNumber = carData.panelNumber;
     const carRegistrationDoc = carData.carRegistrationDoc;
-    const carModel = carData.carModel;
+    const carModelId = carData.carModelId;
     const color = carData.color;
     const batteryCapacity = carData.batteryCapacity;
 
-    if (errorCheck([chassisNumber, panelNumber, carModel, carRegistrationDoc, color, batteryCapacity])) {
+    if (errorCheck([chassisNumber, panelNumber, carModelId, carRegistrationDoc, color, batteryCapacity])) {
         try {
             const userDoc = await db.collection("Users").doc(userId).get();
             if (!userDoc.exists) {
@@ -132,7 +132,7 @@ router.post(`${apiHandler.registerCar}`, async (req, res) => {
                 chassisNumber: chassisNumber,
                 panelNumber: panelNumber,
                 carRegistrationDoc: carRegistrationDoc,
-                carModelId: carModel,
+                carModelId: carModelId,
                 color: color,
                 batteryCapacity: batteryCapacity,
                 createdAt: now,
@@ -176,7 +176,7 @@ router.get(`${apiHandler.getCarById}`,async(req,res)=>{
                     carId,
                     carData.panelNumber,
                     carData.carRegistrationDoc,
-                    carData.carModel,
+                    carData.carModelId,
                     carData.color,
                     carData.batteryCapacity,
                     carData.createdAt,
