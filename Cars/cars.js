@@ -300,7 +300,7 @@ router.get(`${apiHandler.getAllCarModels}`, async (req, res) => {
                 carModel.id,
                 data.modelName,
                 data.modelYear,
-                data.carBrand,
+                data.carBrandId,
                 data.image,
                 data.createdAt,
                 data.updatedAt
