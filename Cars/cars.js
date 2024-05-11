@@ -282,7 +282,7 @@ class CarModel {
         this.id = id;
         this.modelName = modelName;
         this.modelYear = modelYear;
-        this.carBrand = carBrand;
+        this.carBrandId = carBrand;
         this.image=image,
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -301,7 +301,7 @@ router.get(`${apiHandler.getAllCarModels}`, async (req, res) => {
                 carModel.id,
                 data.modelName,
                 data.modelYear,
-                data.carBrandId,
+                data.carBrand,
                 data.image,
                 data.createdAt,
                 data.updatedAt
