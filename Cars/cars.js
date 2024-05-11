@@ -27,7 +27,6 @@ function errorCheck(arr) {
     return true;
 }
 
-
 function getCurrentTime(){
     
 const currentDate = new Date();
@@ -81,7 +80,7 @@ class Car {
             // Constructor without chassisNumber
             this.panelNumber = chassisNumber;
             this.carRegistrationDoc = panelNumber;
-            this.carModelId = carRegistrationDoc;
+            this.carModel = carRegistrationDoc;
             this.color = carModel;
             this.batteryCapacity = color;
             this.createdAt = batteryCapacity;
@@ -91,7 +90,7 @@ class Car {
             this.chassisNumber=chassisNumber
             this.panelNumber = panelNumber;
             this.carRegistrationDoc = carRegistrationDoc;
-            this.carModelId = carModel;
+            this.carModel = carModel;
             this.color = color;
             this.batteryCapacity = batteryCapacity;
             this.createdAt = createdAt;
@@ -109,30 +108,31 @@ router.post(`${apiHandler.registerCar}`, async (req, res) => {
     const chassisNumber = carData.chassisNumber;
     const panelNumber = carData.panelNumber;
     const carRegistrationDoc = carData.carRegistrationDoc;
-    const carModelId = carData.carModelId;
+    const carModel = carData.carModel;
     const color = carData.color;
     const batteryCapacity = carData.batteryCapacity;
 
-    if (errorCheck([chassisNumber, panelNumber, carModelId, carRegistrationDoc, color, batteryCapacity])) {
+    if (errorCheck([chassisNumber, panelNumber, carModel, carRegistrationDoc, color, batteryCapacity])) {
         try {
             const userDoc = await db.collection("Users").doc(userId).get();
             if (!userDoc.exists) {
-                return res.status(401).json({ "message": "User Not Found" });
+                return res.status(400).json({ message: "User Not Found" });
             }
 
             const userData = userDoc.data();
             const listOfCars = userData.listOfCars || [];
 
-            if (listOfCars.some(car => car.chassisNumber === chassisNumber)) {
-                return res.status(409).json({ "message": "The car is already in the user's listOfCars" });
+            if (listOfCars.includes(chassisNumber)) {
+                return res.status(400).json({ message: "The car is already in the user's listOfCars" });
             }
+            listOfCars.push(chassisNumber)
 
             const now = getCurrentTime();
             const newCar = {
                 chassisNumber: chassisNumber,
                 panelNumber: panelNumber,
                 carRegistrationDoc: carRegistrationDoc,
-                carModelId: carModelId,
+                carModelId: carModel,
                 color: color,
                 batteryCapacity: batteryCapacity,
                 createdAt: now,
@@ -141,7 +141,6 @@ router.post(`${apiHandler.registerCar}`, async (req, res) => {
 
             await db.collection("Cars").doc(chassisNumber).set(newCar);
             callLastDataBaseUpdate()
-            listOfCars.push(newCar);
             await db.collection("Users").doc(userId).update({ listOfCars: listOfCars });
             callLastDataBaseUpdate()
             return res.status(200).json(createResponseModel("Car added successfully to the listOfCars of the user",userId,"200000",false));
@@ -168,7 +167,7 @@ router.get(`${apiHandler.getCarById}`,async(req,res)=>{
         .then(async(car)=>{
             if(!car.exists){
                 //car already exists
-                res.status(409).send({"message":"No car with this carId."})
+                res.status(400).send({"message":"No car with this carId."})
             }
             else{
                 const carData = car.data();
@@ -176,7 +175,7 @@ router.get(`${apiHandler.getCarById}`,async(req,res)=>{
                     carId,
                     carData.panelNumber,
                     carData.carRegistrationDoc,
-                    carData.carModelId,
+                    carData.carModel,
                     carData.color,
                     carData.batteryCapacity,
                     carData.createdAt,
@@ -219,18 +218,10 @@ router.get(`${apiHandler.getCarsForUserById}`, async (req, res) => {
                 try {
                     const carsnap = await db.collection('Cars').doc(carId).get();
                     if (carsnap.exists) {
-                        const carData = carsnap.data();
-                const newCar = new Car(
-                    carsnap.id,
-                    carData.panelNumber,
-                    carData.carRegistrationDoc,
-                    carData.carModelId,
-                    carData.color,
-                    carData.batteryCapacity,
-                    carData.createdAt,
-                    carData.updatedAt
-                );
-                       
+                        const newCar = {
+                            id: carsnap.id,
+                            ...carsnap.data()
+                        };
                         return newCar;
                     }
                 } catch (err) {
@@ -261,13 +252,13 @@ router.post(`${apiHandler.deleteCarForUser}`, async (req, res) => {
         const userSnapshot = await userRef.get();
 
         if (!userSnapshot.exists) {
-            return res.status(404).json({ "message": "No user with this userId." });
+            return res.status(400).json({ message: "No user with this userId." });
         }
 
         const userData = userSnapshot.data();
         const carsList = userData.listOfCars || [];
 
-        const index = carsList.findIndex(car => car.chassisNumber === carId);
+        const index = carsList.findIndex(car => car == carId);
         if (index !== -1) {
             carsList.splice(index, 1);
 
@@ -276,7 +267,7 @@ router.post(`${apiHandler.deleteCarForUser}`, async (req, res) => {
             return res.status(200).json(createResponseModel("Car deleted from this user's listOfCars","","200000",false));
 
         } else {
-            return res.status(404).json({ "message": "This user doesn't have this car" });
+            return res.status(400).json({ "message": "This user doesn't have this car" });
         }
     } catch (error) {
         console.error("Error deleting car:", error);
@@ -286,11 +277,11 @@ router.post(`${apiHandler.deleteCarForUser}`, async (req, res) => {
 
 ////////////car Model
 class CarModel {
-    constructor(id, modelName, modelYear, carBrandId,image, createdAt, updatedAt) {
+    constructor(id, modelName, modelYear, carBrand,image, createdAt, updatedAt) {
         this.id = id;
         this.modelName = modelName;
         this.modelYear = modelYear;
-        this.carBrandId = carBrandId;
+        this.carBrand = carBrand;
         this.image=image,
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -309,7 +300,7 @@ router.get(`${apiHandler.getAllCarModels}`, async (req, res) => {
                 carModel.id,
                 data.modelName,
                 data.modelYear,
-                data.carBrandId,
+                data.carBrand,
                 data.image,
                 data.createdAt,
                 data.updatedAt
@@ -320,7 +311,7 @@ router.get(`${apiHandler.getAllCarModels}`, async (req, res) => {
 
         }
         else{
-            res.status(404).json({"message":"There is no CarModels"})
+            res.status(400).json({"message":"There is no CarModels"})
         }
 
     }
@@ -351,7 +342,7 @@ router.get(`${apiHandler.getAllCarBrands}`, async (req, res) => {
             });
             res.status(200).json(carBrands);
         } else {
-            res.status(404).json({ "message": "There are no car brands" });
+            res.status(400).json({ "message": "There are no car brands" });
         }
     } catch (error) {
         console.error("Error getting car brands:", error);
@@ -367,7 +358,7 @@ router.post("/api/v1/LastDataBaseUpdate",async(req,res)=>{
         await col.doc("DataBaseUpdate").get()
         .then(async(data)=>{
             if(!data.exists){
-                res.sendStatus(404);
+                res.sendStatus(400);
             }
             else{
                 let now=parseInt((new Date().getTime())/1000)
