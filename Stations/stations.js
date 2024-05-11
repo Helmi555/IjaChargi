@@ -304,7 +304,7 @@ router.get(`${apiHandler.getAllChargerForStation}`,async (req,res)=>{
                         });
                     });
                     if(chargersData.length==0){
-                        res.status(200).json({"message":"This Station does not have any charger"})
+                       res.status(200).json(chargersData);
 
                     }else{
                     res.status(200).json(chargersData);
@@ -615,7 +615,7 @@ router.get(`${apiHandler.getAllChargerPortForCharger}`,async (req,res)=>{
                         });
                     });
                     if(chargerPortsData.length==0){
-                        res.status(200).json({"message":"This Charger does not have any chargerPort"})
+                     res.status(200).json(chargerPortsData);
 
                     }else{
                     res.status(200).json(chargerPortsData);
