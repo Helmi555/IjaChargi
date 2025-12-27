@@ -16,14 +16,3 @@ console.log("DataBase and Firebase Auth Connected")
 
 
 module.exports={db,auth}
-
-/*const firebaseConfig = {
-  apiKey: "AIzaSyB9VJsfiMuBmixI4nflg4V9QeAt-635-JI",
-  authDomain: "ijachargi.firebaseapp.com",
-  projectId: "ijachargi",
-  storageBucket: "ijachargi.appspot.com",
-  messagingSenderId: "463962922296",
-  appId: "1:463962922296:web:1353229966349de4e4b5cd",
-  measurementId: "G-QEPBYL09XG"
-};
-*/
